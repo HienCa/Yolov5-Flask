@@ -3,6 +3,10 @@ window.onload = () => {
   closeImgageLogin.addEventListener('click', function () {
     document.getElementById('BoxImageLogin').style.display = 'none';
   })
+  const closeVideoLogin = document.getElementById('closeVideoLogin');
+  closeVideoLogin.addEventListener('click', function () {
+    document.getElementById('BoxVideoLogin').style.display = 'none';
+  })
   $("#sendbutton").click(() => {
     const loading = document.getElementById('loading');
     loading.style.display = 'block';
@@ -40,9 +44,17 @@ window.onload = () => {
 
           } else {
             alert("Xác thực thất bại!")
-            document.getElementById('imageLogin').src = `./static/nodetectImage/${data.filename}`;
 
-            document.getElementById('BoxImageLogin').style.display = 'block';
+            if ((data.filename).endsWith('.mp4') || (data.filename).endsWith('.avi') || (data.filename).endsWith('.mov')) {
+              document.getElementById('videoLogin').src = `./static/nodetectImage/${data.filename}`;
+
+              document.getElementById('BoxVideoLogin').style.display = 'block';
+            } else {
+              document.getElementById('imageLogin').src = `./static/nodetectImage/${data.filename}`;
+
+              document.getElementById('BoxImageLogin').style.display = 'block';
+            }
+
             loading.style.display = 'none';
 
           }
@@ -74,6 +86,7 @@ window.onload = () => {
       }
     });
   })
+
 };
 
 function readUrl(input) {

@@ -18,8 +18,59 @@ os.makedirs(uploads_dir, exist_ok=True)
 def hello_world():
     
     return render_template('index.html')
+@app.route("/deleteHistory")
+def delete_History():
+    folder_path_detect = "./static/detectImage"
+    file_names_detect = os.listdir(folder_path_detect)
+    for file_name in file_names_detect:
+        os.remove(os.path.join(folder_path_detect, file_name))
 
 
+    folder_path_runs_detect = "./runs/detect"
+
+    # Kiểm tra nếu thư mục tồn tại
+    if os.path.exists(folder_path_runs_detect):
+        # Xóa tất cả các tệp và thư mục trong thư mục
+        for filename in os.listdir(folder_path_runs_detect):
+            file_path = os.path.join(folder_path_runs_detect, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Không thể xóa %s. Lỗi: %s' % (file_path, e))
+    else:
+        print("Thư mục không tồn tại.")
+
+    return "ok"
+@app.route("/deleteHistory2")
+def delete_History2():
+
+    folder_path_nodetect = "./static/nodetectImage"
+    file_names_nodetect = os.listdir(folder_path_nodetect)
+    for file_name in file_names_nodetect:
+        os.remove(os.path.join(folder_path_nodetect, file_name))
+
+
+    folder_path_runs_detect = "./runs/detect"
+
+    # Kiểm tra nếu thư mục tồn tại
+    if os.path.exists(folder_path_runs_detect):
+        # Xóa tất cả các tệp và thư mục trong thư mục
+        for filename in os.listdir(folder_path_runs_detect):
+            file_path = os.path.join(folder_path_runs_detect, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Không thể xóa %s. Lỗi: %s' % (file_path, e))
+    else:
+        print("Thư mục không tồn tại.")
+
+    return "ok"
 @app.route("/detect", methods=['POST'])
 def detect():
     if not request.method == "POST":
@@ -40,8 +91,9 @@ def detect():
         status = 'success'
         for root, dirs, files in os.walk('runs/detect'):
             for file in files:
-                if file.endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                if file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.mp4', '.avi', '.mov')):
                     shutil.copy(os.path.join(root, file), os.path.join('static/detectImage', file))
+                
     if "no detections" in output:
         status ='fail'
         obj = secure_filename(video.filename)
@@ -137,8 +189,18 @@ def return_file():
 
 @app.route('/light_system')
 def light_system():
-   
-    images = os.listdir('static/detectImage')
+    
+    a_dir = "./static/detectImage"
+    b_dir = "./static/nodetectImage"
+
+    for filename in os.listdir(a_dir):
+        a_file_path = os.path.join(a_dir, filename)
+        b_file_path = os.path.join(b_dir, filename)
+        if os.path.isfile(a_file_path) and os.path.isfile(b_file_path):
+            os.remove(a_file_path)
+
+    imagesDetect = os.listdir('static/detectImage')
+    noImagesDetect = os.listdir('static/nodetectImage')
     obj = request.args.get('obj')
     # do something with obj
-    return render_template('LightSystem.html',  images=images)
+    return render_template('LightSystem.html',  imagesDetect=imagesDetect, noImagesDetect=noImagesDetect)
